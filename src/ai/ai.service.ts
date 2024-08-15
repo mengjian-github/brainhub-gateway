@@ -1,4 +1,4 @@
-import { generateText, LanguageModel } from 'ai';
+import { streamText, LanguageModel, convertToCoreMessages } from 'ai';
 import { openai } from '@ai-sdk/openai';
 import { anthropic } from '@ai-sdk/anthropic';
 import { google } from '@ai-sdk/google';
@@ -17,10 +17,14 @@ const SUPPORTED_AI_MODELS: SupportedAiModels = {
 
 @Injectable()
 export class AiService {
-  generate(model: keyof typeof SUPPORTED_AI_MODELS, prompt: string) {
-    return generateText({
+  async chat(model: keyof typeof SUPPORTED_AI_MODELS, messages) {
+    const result = await streamText({
       model: SUPPORTED_AI_MODELS[model],
-      prompt,
+      system: 'You are a helpful assistant',
+      messages: convertToCoreMessages(messages),
     });
+    return {
+      pipeAIStreamToResponse: result.pipeAIStreamToResponse.bind(result),
+    };
   }
 }

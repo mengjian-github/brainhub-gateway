@@ -1,12 +1,17 @@
-import { Controller, Get } from '@nestjs/common';
+import { Body, Controller, Post, Response } from '@nestjs/common';
 import { AiService } from './ai.service';
 
 @Controller('ai')
 export class AiController {
   constructor(private aiService: AiService) {}
 
-  @Get('test')
-  test() {
-    return this.aiService.generate('claude-3-5-sonnet', 'hello world');
+  @Post('chat')
+  async chat(@Body() body, @Response() res) {
+    const { messages } = body;
+    const { pipeAIStreamToResponse } = await this.aiService.chat(
+      'gpt-4o',
+      messages,
+    );
+    pipeAIStreamToResponse(res);
   }
 }
