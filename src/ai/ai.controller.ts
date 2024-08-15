@@ -7,9 +7,9 @@ export class AiController {
 
   @Post('chat')
   async chat(@Body() body, @Response() res) {
-    const { messages } = body;
+    const { messages, model } = body;
     const { pipeAIStreamToResponse } = await this.aiService.chat(
-      'gpt-4o',
+      model,
       messages,
     );
     pipeAIStreamToResponse(res);
